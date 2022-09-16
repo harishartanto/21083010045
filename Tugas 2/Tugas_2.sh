@@ -1,6 +1,6 @@
 #!/bin/bash
 
-banner() {
+header() {
     msg="# $* #"
     edge=$(echo "$msg" | sed 's/./=/g')
     echo "$edge"
@@ -8,10 +8,8 @@ banner() {
     echo "$edge"
 }
 
-banner "   Konversi Suhu   "
-
 celcius() {
-    banner "   Konversi Suhu Celcius   "
+    header "   Konversi Suhu Celcius   "
     echo -e "\nMasukkan suhu (°C): "
     read suhu
     c_f=$(printf $suhu | awk '{print 9/5 * $suhu + 32}')
@@ -51,7 +49,7 @@ celcius() {
 }
 
 fahrenheit() {
-    banner "   Konversi Suhu Fahrenheit   "
+    header "   Konversi Suhu Fahrenheit   "
     echo -e "\nMasukkan suhu (°F): "
     read suhu
     f_c=$(printf $suhu | awk '{print 5/9 * ($suhu - 32)}')
@@ -91,7 +89,7 @@ fahrenheit() {
 }
 
 reaumur() {
-    banner "   Konversi Suhu Reaumur   "
+    header "   Konversi Suhu Reaumur   "
     echo -e "\nMasukkan suhu (°R): "
     read suhu
     r_c=$(printf $suhu | awk '{print 5/4 * $suhu}')
@@ -131,7 +129,7 @@ reaumur() {
 }
 
 kelvin() {
-    banner "   Konversi Suhu Kelvin   "
+    header "   Konversi Suhu Kelvin   "
     echo -e "\nMasukkan suhu (K): "
     read suhu
     let k_c=$(printf $suhu | awk '{print $suhu - 273}')
@@ -171,6 +169,7 @@ kelvin() {
 }
 
 satuan_awal () {
+    header "   Konversi Suhu   "
     echo -e "\nPilih satuan suhu awal"
     echo -e "[1] Celcius (°C)\n[2] Fahrenheit (°F)\n[3] Reaumur (°R)\n[4] Kelvin (K)\n\nPilih (1/2/3/4): "
     read pilih
