@@ -198,4 +198,81 @@ satuan_awal () {
     fi
 }
 
-satuan_awal
+dadu() {
+    header "   Acak Dadu   "
+    m_dadu=(1 2 3 4 5 6)
+    let pilih=$RANDOM%6
+    echo -e "\nMata Dadu: ${m_dadu[$pilih]}"
+    echo -e "\n+-------+"
+    if [ $pilih == 0 ]
+    then   
+        echo "|       |"
+        echo "|   *   |"
+        echo "|       |"
+    elif [ $pilih == 1 ]
+    then   
+        echo "| *     |"
+        echo "|       |"
+        echo "|     * |"
+    elif [ $pilih == 2 ]
+    then   
+        echo "|     * |"
+        echo "|   *   |"
+        echo "| *     |"
+    elif [ $pilih == 3 ]
+    then   
+        echo "| *   * |"
+        echo "|       |"
+        echo "| *   * |"
+    elif [ $pilih == 4 ]
+    then   
+        echo "| *   * |"
+        echo "|   *   |"
+        echo "| *   * |"
+    else
+        echo "| * * * |"
+        echo "|       |"
+        echo "| * * * |"
+    fi
+    echo "+-------+"
+
+    echo -e "\nUlangi? (Y/N)"
+    read ulang
+    if [ ${ulang^^} == Y ]
+    then 
+        clear
+        dadu
+    elif [ ${ulang^^} == N ]
+    then
+        clear
+        start
+    else
+        clear
+        echo "Pilihan tidak valid!"
+        sleep 1
+        clear
+        dadu
+    fi
+}
+
+start() {
+    echo -e "Pilih program:\n[1] Konversi Suhu\n[2] Acak Dadu\n\nPilih (1/2): "
+    read pilih
+    if [ $pilih == 1 ]
+    then
+        clear
+        satuan_awal
+    elif [ $pilih == 2 ]
+    then
+        clear
+        dadu
+    else
+        clear
+        echo "Pilihan tidak valid!"
+        sleep 1
+        clear
+        start
+    fi
+}
+
+start
