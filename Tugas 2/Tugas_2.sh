@@ -199,7 +199,7 @@ satuan_awal () {
 }
 
 dadu() {
-    header "   Acak Dadu   "
+    header "   Lempar Dadu   "
     m_dadu=(1 2 3 4 5 6)
     let pilih=$RANDOM%6
     echo -e "\nMata Dadu: ${m_dadu[$pilih]}"
@@ -236,7 +236,7 @@ dadu() {
     fi
     echo "+-------+"
 
-    echo -e "\nUlangi? (Y/N)"
+    echo -e "\nLempar dadu lagi? (Y/N)"
     read ulang
     if [ ${ulang^^} == Y ]
     then 
@@ -244,8 +244,7 @@ dadu() {
         dadu
     elif [ ${ulang^^} == N ]
     then
-        clear
-        start
+        exit
     else
         clear
         echo "Pilihan tidak valid!"
@@ -256,7 +255,7 @@ dadu() {
 }
 
 start() {
-    echo -e "Pilih program:\n[1] Konversi Suhu\n[2] Acak Dadu\n\nPilih (1/2): "
+    echo -e "Pilih program:\n[1] Konversi Suhu\n[2] Lempar Dadu\n\nPilih (1/2): "
     read pilih
     if [ $pilih == 1 ]
     then
