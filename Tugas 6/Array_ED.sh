@@ -12,6 +12,6 @@ do
    let i=$i+1;
 done
 
-#Menampilkan/memanggil semua elemen dalam array "angka" dengan menggunakan "*" atau "@"
+#Menampilkan & memanggil semua elemen dalam array "angka" dengan menggunakan "*" atau "@"
 echo ${angka[*]}
 echo ${angka[@]}

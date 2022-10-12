@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #Mendeklarasikan array 2D dengan
-#spasi (" ")sebagai pembagi baris dan titik dua (:) sebagai pembagi kolom 
+#spasi (" ") sebagai pembatas antar baris dan titik dua (:) sebagai pembatas antar kolom
 array2d="1.1:1.2:1.3:1.4 2.1:2.2:2.3:2.4 3.1:3.2:3.3:3.4"
 
 #Membuat function untuk membentuk array 2D

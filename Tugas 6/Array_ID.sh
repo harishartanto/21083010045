@@ -11,7 +11,6 @@ distroLinuxServer[0]=UbuntuServer
 distroLinuxServer[1]=CentOS
 distroLinuxServer[2]=FedoraServer
 
-#Menampilkan/memanggil elemen dalam array
+#Menampilkan & memanggil elemen dalam array
 echo ${distroLinuxDesktop[*]}
 echo ${distroLinuxServer[*]}
-
