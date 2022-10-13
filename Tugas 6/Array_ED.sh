@@ -13,5 +13,4 @@ do
 done
 
 #Menampilkan & memanggil semua elemen dalam array "angka" dengan menggunakan "*" atau "@"
-echo ${angka[*]}
 echo ${angka[@]}
