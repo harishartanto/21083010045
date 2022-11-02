@@ -16,7 +16,7 @@ echo "Masukkan NPM: "
 read b
 echo "Apa hobimu?"
 read c
-echo ""
+echo
 
 # Pemanggilan function (dengan argument)
 identitas $a $b $c
