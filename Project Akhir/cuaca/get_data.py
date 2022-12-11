@@ -28,3 +28,9 @@ def data_cleaning(data):
     del data['Indonesia']
 
     return data
+
+def data_filtering(data, filter_list):
+    for key, _ in list(data.items()):
+        if key not in filter_list:
+            del data[key]
+    return data

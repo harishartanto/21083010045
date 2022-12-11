@@ -1,13 +1,8 @@
 from get_data import *
 
+#java_prov = ['Banten', 'DI Yogyakarta', 'DKI Jakarta', 'Jawa Barat', 'Jawa Tengah', 'Jawa Timur']
 province_url = data_cleaning(get_province())
-
-#province_url = {'Banten': 'https://data.bmkg.go.id/DataMKG/MEWS/DigitalForecast/DigitalForecast-Banten.xml',
-#                'DI Yogyakarta': 'https://data.bmkg.go.id/DataMKG/MEWS/DigitalForecast/DigitalForecast-DIYogyakarta.xml',
-#                'DKI Jakarta': 'https://data.bmkg.go.id/DataMKG/MEWS/DigitalForecast/DigitalForecast-DKIJakarta.xml',
-#                'Jawa Barat': 'https://data.bmkg.go.id/DataMKG/MEWS/DigitalForecast/DigitalForecast-JawaBarat.xml',
-#                'Jawa Tengah': 'https://data.bmkg.go.id/DataMKG/MEWS/DigitalForecast/DigitalForecast-JawaTengah.xml',
-#                'Jawa Timur': 'https://data.bmkg.go.id/DataMKG/MEWS/DigitalForecast/DigitalForecast-JawaTimur.xml'}
+#province_url = data_filtering(province_url, java_prov)
 
 weather_code = {'0': 'Cerah',
                 '1': 'Cerah Berawan',
