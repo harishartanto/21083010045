@@ -6,12 +6,14 @@ from bs4 import BeautifulSoup as bs
 from datetime import datetime, timedelta
 from constants import *
 
-def home():
-    header('Indonesia')
-    
-    print('\n(1) Pilih Lokasi\n(2) Deskripsi\n(3) Keluar')
+loc = 'Indonesia'
+province_url = data_cleaning(get_province())
 
-    p1 = input('\nPilih (1/2/3): ')
+def home():
+    header(loc)
+    print('\n(1) Pilih Lokasi\n(2) Deskripsi\n(3) Opsi\n(4) Keluar')
+
+    p1 = input('\nPilih (1/2/3/4): ')
     os.system('clear')
     if p1 == '1':
         os.system('clear')
@@ -20,6 +22,9 @@ def home():
         os.system('clear')
         description()
     elif p1 == '3':
+        os.system('clear')
+        options()
+    elif p1 == '4':
         os.system('clear')
         print('Keluar dari program')
         time.sleep(0.5)
@@ -30,7 +35,7 @@ def home():
         home()
 
 def description():
-    print('+-------------------- Dekripsi --------------------+\n')
+    print('+-------------------------------- Dekripsi ----------------------------------+\n')
     print('''Keterangan Simbol Cuaca:
     - Suhu udara dengan satuan  celcius (°C)
     - [💧] Kelembaban udara dengan satuan persen (%)
@@ -39,8 +44,8 @@ def description():
     - [?] Data belum tersedia
     ''')
     print('Sumber data: BMKG (Badan Meteorologi, Klimatologi, dan Geofisika) Indonesia\n'+
-          'URL        : https://data.bmkg.go.id/prakiraan-cuaca/\n')
-    print('+--------------------------------------------------+\n')
+          'URL        : https://data.bmkg.go.id/prakiraan-cuaca/\n\nJumlah provinsi yang tersedia pada sumber data adalah sebanyak 34 pronvisi.')
+    print('\n+'+'-'*76+'+\n')
     print('(K) Kembali')
 
     p2 = input('\nPilih (K): ')
@@ -51,15 +56,53 @@ def description():
         invalid_selection()
         description()
 
+def options():
+    print('+--------------------------- Opsi Lokasi --------------------------+\n')
+    global loc
+    global province_url
+
+    n = 1
+    for k in loc_filter.keys():
+            print(f'({n}) {k}')
+            n += 1
+    print('\n+'+'-'*66+'+\n')
+    print('(K) Kembali')
+    jawab = input(f'\nPilih (1/2/.../{n-1}/K): ')
+    os.system('clear')
+
+    if jawab == 'K' or jawab == 'k':
+        home()
+    elif jawab.isnumeric():
+        if int(jawab) in range(1, n):
+            loc = list(loc_filter.keys())[int(jawab)-1]
+            province_url = loc_selection(loc_filter, loc)
+            home()
+        else:
+            invalid_selection()
+            options()
+    else:
+        invalid_selection()
+        options()
+
+def loc_selection(loc_filter, key):
+    province_url = data_cleaning(get_province())
+    province_url = data_filtering(province_url, loc_filter[key])
+    return province_url
+
 def select_province(province_dict):
-    print('+-------------------- Pilih Provinsi --------------------+\n')
+    print('+------------------------- Pilih Provinsi -------------------------+\n')
     n = 1
     for k in province_dict.keys():
             print(f'({n}) {k}')
             n += 1
-    print('\n+--------------------------------------------------------+\n')
+    print('\n+'+'-'*66+'+\n')
     print('(K) Kembali')
-    jawab = input(f'\nPilih (1/2/.../{n-1}/K): ')
+    if n == 1:
+        jawab = input('\nPilih (1/K): ')
+    elif n == 2:
+        jawab = input('\nPilih (1/2/K): ')
+    else:
+        jawab = input(f'\nPilih (1/2/.../{n-1}/K): ')
     os.system('clear')
  
     if jawab == 'K' or jawab == 'k':
@@ -106,12 +149,12 @@ def get_city(url, prov_name):
     select_city(city_dict, data)
 
 def select_city(city_dict, data):
-    print('+-------------------- Pilih Daerah --------------------+\n')
+    print('+-------------------------- Pilih Daerah --------------------------+\n')
     n = 1
     for v in city_dict.values():
         print(f'({n}) {v}')
         n += 1
-    print('\n+------------------------------------------------------+\n')
+    print('\n+'+'-'*66+'+\n')
     print('(K) Kembali')
     jawab = input(f'\nPilih (1/2/.../{n-1}/K): ')
     os.system('clear')
@@ -154,7 +197,7 @@ def weather(city_id, city_n, city_dict, data):
     
     print('\n(1) Cuaca hari ini\n(2) Cuaca 3 hari kedepan\n(3) Kembali\n(4) Beranda')
 
-    p3 = input('\nPilih (1/2/3): ')
+    p3 = input('\nPilih (1/2/3/4): ')
     os.system('clear')
     if p3 == '1':
         os.system('clear')
@@ -268,7 +311,7 @@ def tm_weather(weather_list, wind_dir_list, city_id, city_n, city_dict, data):
         invalid_selection()
         tm_weather(weather_list, wind_dir_list, city_id, city_n, city_dict, data)
 
-def header(place, place_2='Daerah', length=65):
+def header(place, place_2='Daerah', length=66):
     print('+'+'-'*length+'+')
     print('|'+'Prakiraan Cuaca'.center(length)+'|')
     print('|'+f'{place_2} di {place}'.center(length)+'|')

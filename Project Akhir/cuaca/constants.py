@@ -1,8 +1,14 @@
 from get_data import *
 
-#java_prov = ['Banten', 'DI Yogyakarta', 'DKI Jakarta', 'Jawa Barat', 'Jawa Tengah', 'Jawa Timur']
-province_url = data_cleaning(get_province())
-#province_url = data_filtering(province_url, java_prov)
+loc_filter = {'Indonesia': list(data_cleaning(get_province()).keys()),
+              'Pulau Sumatera': ['Aceh', 'Bangka Belitung', 'Bengkulu', 'Jambi', 'Kepulauan Riau', 'Lampung', 'Riau', 'Sumatera Barat', 'Sumatera Selatan', 'Sumatera Utara'],
+              'Pulau Jawa': ['Banten', 'DI Yogyakarta', 'DKI Jakarta', 'Jawa Barat', 'Jawa Tengah', 'Jawa Timur'],
+              'Pulau Bali': ['Bali'],
+              'Pulau Nusa Tenggara': ['Nusa Tenggara Barat', 'Nusa Tenggara Timur'],
+              'Pulau Kalimantan': ['Kalimantan Barat', 'Kalimantan Selatan', 'Kalimantan Tengah', 'Kalimantan Timur', 'Kalimantan Utara'],
+              'Pulau Sulawesi': ['Gorontalo', 'Sulawesi Barat', 'Sulawesi Selatan', 'Sulawesi Tengah', 'Sulawesi Tenggara', 'Sulawesi Utara'],
+              'Pulau Maluku': ['Maluku', 'Maluku Utara'],
+              'Pulau Papua': ['Papua', 'Papua Barat']}
 
 weather_code = {'0': 'Cerah',
                 '1': 'Cerah Berawan',
