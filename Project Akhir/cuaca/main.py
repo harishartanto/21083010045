@@ -1,8 +1,6 @@
 import os
 import time
-import requests
 from prettytable import PrettyTable
-from bs4 import BeautifulSoup as bs
 from datetime import datetime, timedelta
 from constants import *
 
@@ -11,20 +9,22 @@ province_url = data_cleaning(get_province())
 
 def home():
     header(loc)
-    print('\n(1) Pilih Lokasi\n(2) Deskripsi\n(3) Opsi\n(4) Keluar')
+    print('\n(1) Pilih Lokasi\n(2) Cari Lokasi\n(3) Deskripsi\n(4) Opsi\n(5) Keluar')
 
-    p1 = input('\nPilih (1/2/3/4): ')
+    p1 = input('\nPilih (1/2/3/4/5): ')
     os.system('clear')
     if p1 == '1':
         os.system('clear')
         select_province(province_url) 
     elif p1 == '2':
-        os.system('clear')
-        description()
+        loc_search(province_url)
     elif p1 == '3':
         os.system('clear')
-        options()
+        description()
     elif p1 == '4':
+        os.system('clear')
+        options()
+    elif p1 == '5':
         os.system('clear')
         print('Keluar dari program')
         time.sleep(0.5)
@@ -57,7 +57,7 @@ def description():
         description()
 
 def options():
-    print('+--------------------------- Opsi Lokasi --------------------------+\n')
+    print('+------------------------- Pilih Lokasi --------------------------+\n')
     global loc
     global province_url
 
@@ -65,7 +65,7 @@ def options():
     for k in loc_filter.keys():
             print(f'({n}) {k}')
             n += 1
-    print('\n+'+'-'*66+'+\n')
+    print('\n+'+'-'*65+'+\n')
     print('(K) Kembali')
     jawab = input(f'\nPilih (1/2/.../{n-1}/K): ')
     os.system('clear')
@@ -84,10 +84,43 @@ def options():
         invalid_selection()
         options()
 
-def loc_selection(loc_filter, key):
-    province_url = data_cleaning(get_province())
-    province_url = data_filtering(province_url, loc_filter[key])
-    return province_url
+def loc_search(province_dict):
+    jawab = input('Nama kota/kabupaten: ').lower()
+
+    city = []
+    for _, v in province_dict.items():
+        i, _ = get_city(v)
+        city.append(i)
+
+    cid_list = {}
+    for i in city:
+        for k, v in i.items():
+            x = re.search(r'\((.*?)\)', v)
+            if (x.group(1)).lower() == jawab:
+                cid_list[k] = v
+    try:
+        for i, v in enumerate(city):
+            if list(cid_list.keys())[0] in v:
+                prov_idx = i
+    except IndexError:
+        os.system('clear')
+        print('[Kota/kabupaten tidak ditemukan]')
+        time.sleep(1)
+        os.system('clear')
+        home()
+
+    url = list(province_dict.values())[prov_idx]
+    response = requests.get(url)
+    r = response.text
+    data = bs(r, 'xml')
+
+    if len(cid_list) == 0:
+        print('Kota/kabupaten tidak ditemukan')
+        time.sleep(1)
+        os.system('clear')
+        home()
+    else:
+        weather(list(cid_list.keys())[0], list(cid_list.values())[0], data)
 
 def select_province(province_dict):
     print('+------------------------- Pilih Provinsi -------------------------+\n')
@@ -110,7 +143,8 @@ def select_province(province_dict):
     elif jawab.isnumeric():
         if int(jawab) in range(1, n):
             url = province_dict[list(province_dict.keys())[int(jawab)-1]]
-            get_city(url, list(province_dict.keys())[int(jawab)-1])
+            x, y = get_city(url)
+            select_city(x, y)
         else:
             invalid_selection()
             select_province(province_dict)
@@ -118,7 +152,7 @@ def select_province(province_dict):
         invalid_selection()
         select_province(province_dict)
 
-def get_city(url, prov_name):
+def get_city(url):
     response = requests.get(url)
     r = response.text
     data = bs(r, 'xml')
@@ -131,7 +165,7 @@ def get_city(url, prov_name):
     outside_dom_idx = []
     n = 0
     for i in city:
-        if i['domain'] == prov_name:
+        if i['tags'] == '':
             k, v = i['id'], i['description']
             city_dict[k] = v
             n += 1
@@ -146,7 +180,8 @@ def get_city(url, prov_name):
 
     city_dict = {k: city_list[i]+f' ({v})' for i, (k, v) in enumerate(city_dict.items())} 
 
-    select_city(city_dict, data)
+    return city_dict, data
+    #select_city(city_dict, data)
 
 def select_city(city_dict, data):
     print('+-------------------------- Pilih Daerah --------------------------+\n')
@@ -165,7 +200,7 @@ def select_city(city_dict, data):
     elif jawab.isnumeric():
         if int(jawab) in range(1, n):
             key, value = list(city_dict.items())[int(jawab)-1]
-            weather(key, value, city_dict, data)
+            weather(key, value, data, city_dict)
         else:
             invalid_selection()
             select_city(city_dict, data)
@@ -173,7 +208,7 @@ def select_city(city_dict, data):
         invalid_selection()
         select_city(city_dict, data)
 
-def weather(city_id, city_n, city_dict, data):
+def weather(city_id, city_n, data, city_dict=None):
     header(city_n)
 
     hourly_list = ['0', '6', '12', '18', '24', '30', '36', '42', '48', '54', '60', '66']
@@ -195,27 +230,36 @@ def weather(city_id, city_n, city_dict, data):
         wdh = wind_direction.find(h=wd).find(unit='CARD').text
         wind_dir_list.append(wdh)
     
-    print('\n(1) Cuaca hari ini\n(2) Cuaca 3 hari kedepan\n(3) Kembali\n(4) Beranda')
+    if city_dict == None:
+        print('\n(1) Cuaca hari ini\n(2) Cuaca 3 hari kedepan\n(3) Beranda')
+    else:
+        print('\n(1) Cuaca hari ini\n(2) Cuaca 3 hari kedepan\n(3) Kembali\n(4) Beranda')
 
-    p3 = input('\nPilih (1/2/3/4): ')
+    if city_dict == None:
+        p3 = input('\nPilih (1/2/3): ')
+    else:
+        p3 = input('\nPilih (1/2/3/4): ')
     os.system('clear')
     if p3 == '1':
         os.system('clear')
-        td_weather(weather_list, wind_dir_list, city_id, city_n, city_dict, data)
+        td_weather(weather_list, wind_dir_list, city_id, city_n, data, city_dict)
     elif p3 == '2':
         os.system('clear')
-        tm_weather(weather_list, wind_dir_list, city_id, city_n, city_dict, data)
-    elif p3 == '3':
+        tm_weather(weather_list, wind_dir_list, city_id, city_n, data, city_dict)
+    elif city_dict == None and p3 == '3':
+        os.system('clear')
+        home()
+    elif city_dict != None and p3 == '3':
         os.system('clear')
         select_city(city_dict, data)
-    elif p3 == '4':
+    elif city_dict != None and p3 == '4':
         os.system('clear')
         home()
     else:
         invalid_selection()
-        weather(city_id, city_n, city_dict, data)
+        weather(city_id, city_n, data, city_dict)
 
-def td_weather(weather_list, wind_dir_list, city_id, city_n, city_dict, data):
+def td_weather(weather_list, wind_dir_list, city_id, city_n, data, city_dict=None):
     header(city_n, '', 109)
     date_time = datetime.now().strftime("%d %B %Y")
     date_time = date_time.replace(date_time[3:-5], month_id[date_time[3:-5]])
@@ -245,15 +289,15 @@ def td_weather(weather_list, wind_dir_list, city_id, city_n, city_dict, data):
     os.system('clear')
     if p4 == '1':
         os.system('clear')
-        weather(city_id, city_n, city_dict, data)
+        weather(city_id, city_n, data, city_dict)
     elif p4 == '2':
         os.system('clear')
         home()
     else:
         invalid_selection()
-        td_weather(weather_list, wind_dir_list, city_id, city_n, city_dict, data)
+        td_weather(weather_list, wind_dir_list, city_id, city_n, data, city_dict)
 
-def tm_weather(weather_list, wind_dir_list, city_id, city_n, city_dict, data):
+def tm_weather(weather_list, wind_dir_list, city_id, city_n, data, city_dict=None):
     header(city_n, '', 147)
     for i in range(0,3):
         for j in range(len(weather_list)):
@@ -303,13 +347,13 @@ def tm_weather(weather_list, wind_dir_list, city_id, city_n, city_dict, data):
     os.system('clear')
     if p4 == '1':
         os.system('clear')
-        weather(city_id, city_n, city_dict, data)
+        weather(city_id, city_n, data, city_dict)
     elif p4 == '2':
         os.system('clear')
         home()
     else:
         invalid_selection()
-        tm_weather(weather_list, wind_dir_list, city_id, city_n, city_dict, data)
+        tm_weather(weather_list, wind_dir_list, city_id, city_n, data, city_dict)
 
 def header(place, place_2='Daerah', length=66):
     print('+'+'-'*length+'+')
@@ -322,6 +366,11 @@ def invalid_selection():
     print('[Pilihan tidak valid]')
     time.sleep(0.5)
     os.system('clear')
+
+def loc_selection(loc_filter, key):
+    province_url = data_cleaning(get_province())
+    province_url = data_filtering(province_url, loc_filter[key])
+    return province_url
 
 def get_symbol(id, weather):
     symbol = '\n'.join(weather[id])
