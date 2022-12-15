@@ -1,6 +1,5 @@
 import os
 import time
-import re
 from prettytable import PrettyTable
 from datetime import datetime, timedelta
 from constants import *
