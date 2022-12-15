@@ -44,7 +44,7 @@ def home():
         home()
 
 def description():
-    print('+-------------------------------- Dekripsi ----------------------------------+\n')
+    print('+-------------------------------- Deskripsi ----------------------------------+\n')
     print('''Keterangan Simbol Cuaca:
     - Suhu udara dengan satuan  celcius (°C)
     - [💧] Kelembaban udara dengan satuan persen (%)
