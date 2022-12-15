@@ -57,6 +57,8 @@ def description():
     ''')
     print('Sumber data: BMKG (Badan Meteorologi, Klimatologi, dan Geofisika) Indonesia\n'+
           'URL        : https://data.bmkg.go.id/prakiraan-cuaca/\n\nJumlah provinsi yang tersedia pada sumber data adalah sebanyak 34 pronvisi.')
+    print('\n+'+'-'*76+'+\n')    
+    print('Dibuat oleh Muhamad Haris Hartanto (21083010045)')
     print('\n+'+'-'*76+'+\n')
     print('(K) Kembali')
 
@@ -451,4 +453,5 @@ def knot_to_kmh(knots):
     return kmh
 
 if __name__ == '__main__':
+    os.system('clear')
     home()
