@@ -1,6 +1,9 @@
 import os
 import time
+import requests
+import re
 from prettytable import PrettyTable
+from bs4 import BeautifulSoup as bs
 from datetime import datetime, timedelta
 from constants import *
 
@@ -9,28 +12,37 @@ province_url = data_cleaning(get_province())
 
 def home():
     header(loc)
-    print('\n(1) Pilih Lokasi\n(2) Cari Lokasi\n(3) Deskripsi\n(4) Opsi\n(5) Keluar')
+    table = table_header()
+    table.add_row(['(1) Pilih Lokasi\n(2) Cari Lokasi\n(3) Deskripsi\n(4) Opsi\n(5) Keluar'])
+    print(table)
 
-    p1 = input('\nPilih (1/2/3/4/5): ')
+    jawab = input('\nPilih (1/2/3/4/5): ')
     os.system('clear')
-    if p1 == '1':
+
+    if jawab == '1':
+        table.clear_rows()
         os.system('clear')
         select_province(province_url) 
-    elif p1 == '2':
+    elif jawab == '2':
+        table.clear_rows()
         loc_search(province_url)
-    elif p1 == '3':
+    elif jawab == '3':
+        table.clear_rows()
         os.system('clear')
         description()
-    elif p1 == '4':
+    elif jawab == '4':
+        table.clear_rows()
         os.system('clear')
         options()
-    elif p1 == '5':
+    elif jawab == '5':
+        table.clear_rows()
         os.system('clear')
         print('Keluar dari program')
         time.sleep(0.5)
         os.system('clear')
         exit()
     else:
+        table.clear_rows()
         invalid_selection()
         home()
 
@@ -48,39 +60,52 @@ def description():
     print('\n+'+'-'*76+'+\n')
     print('(K) Kembali')
 
-    p2 = input('\nPilih (K): ')
+    jawab = input('\nPilih (K): ').lower()
     os.system('clear')
-    if p2 == 'k' or p2 == 'K':
+
+    if jawab == 'k':
         home()
     else:
         invalid_selection()
         description()
 
 def options():
-    print('+------------------------- Pilih Lokasi --------------------------+\n')
+    table = table_header('Opsi Lokasi')
+
     global loc
     global province_url
 
+    options_list = []
     n = 1
     for k in loc_filter.keys():
-            print(f'({n}) {k}')
-            n += 1
-    print('\n+'+'-'*65+'+\n')
-    print('(K) Kembali')
+        o = f'({n}) {k}'
+        options_list.append(o)
+        n += 1
+    join_options = '\n'.join(options_list)
+
+    table.add_row([join_options])
+    print(table)
+    table.add_row(['(K) Kembali'])
+    print( "\n".join(table.get_string().splitlines()[-2:]) )
+
     jawab = input(f'\nPilih (1/2/.../{n-1}/K): ')
     os.system('clear')
 
     if jawab == 'K' or jawab == 'k':
+        table.clear_rows()
         home()
     elif jawab.isnumeric():
         if int(jawab) in range(1, n):
             loc = list(loc_filter.keys())[int(jawab)-1]
             province_url = loc_selection(loc_filter, loc)
+            table.clear_rows()
             home()
         else:
+            table.clear_rows()
             invalid_selection()
             options()
     else:
+        table.clear_rows()
         invalid_selection()
         options()
 
@@ -114,8 +139,9 @@ def loc_search(province_dict):
     r = response.text
     data = bs(r, 'xml')
 
+    os.system('clear')
     if len(cid_list) == 0:
-        print('Kota/kabupaten tidak ditemukan')
+        print('[Kota/kabupaten tidak ditemukan]')
         time.sleep(1)
         os.system('clear')
         home()
@@ -123,13 +149,21 @@ def loc_search(province_dict):
         weather(list(cid_list.keys())[0], list(cid_list.values())[0], data)
 
 def select_province(province_dict):
-    print('+------------------------- Pilih Provinsi -------------------------+\n')
+    table = table_header('Pilih Provinsi')
+
+    province_list = []
     n = 1
     for k in province_dict.keys():
-            print(f'({n}) {k}')
-            n += 1
-    print('\n+'+'-'*66+'+\n')
-    print('(K) Kembali')
+        p = f'({n}) {k}'
+        province_list.append(p)
+        n += 1
+    join_province = '\n'.join(province_list)
+
+    table.add_row([join_province])
+    print(table)
+    table.add_row(['(K) Kembali'])
+    print( "\n".join(table.get_string().splitlines()[-2:]) )
+
     if n == 1:
         jawab = input('\nPilih (1/K): ')
     elif n == 2:
@@ -137,18 +171,22 @@ def select_province(province_dict):
     else:
         jawab = input(f'\nPilih (1/2/.../{n-1}/K): ')
     os.system('clear')
- 
+
     if jawab == 'K' or jawab == 'k':
+        table.clear_rows()
         home()
     elif jawab.isnumeric():
         if int(jawab) in range(1, n):
             url = province_dict[list(province_dict.keys())[int(jawab)-1]]
             x, y = get_city(url)
+            table.clear_rows()
             select_city(x, y)
         else:
+            table.clear_rows()
             invalid_selection()
             select_province(province_dict)
     else:
+        table.clear_rows()
         invalid_selection()
         select_province(province_dict)
 
@@ -181,35 +219,46 @@ def get_city(url):
     city_dict = {k: city_list[i]+f' ({v})' for i, (k, v) in enumerate(city_dict.items())} 
 
     return city_dict, data
-    #select_city(city_dict, data)
 
 def select_city(city_dict, data):
-    print('+-------------------------- Pilih Daerah --------------------------+\n')
+    table = table_header('Pilih Daerah')
+    daerah_list = []
     n = 1
     for v in city_dict.values():
-        print(f'({n}) {v}')
+        d = f'({n}) {v}'
+        daerah_list.append(d)
         n += 1
-    print('\n+'+'-'*66+'+\n')
-    print('(K) Kembali')
-    jawab = input(f'\nPilih (1/2/.../{n-1}/K): ')
+    join_daerah = '\n'.join(daerah_list)
+
+    table.add_row([join_daerah])
+    print(table)
+    table.add_row(['(K) Kembali'])
+    print( "\n".join(table.get_string().splitlines()[-2:]) )
+
+    jawab = input(f'\nPilih (1/2/.../{n-1}/K): ').lower()
     os.system('clear')
 
-    if jawab == 'K' or jawab == 'k':
+    if jawab == 'k':
+        table.clear_rows()
         os.system('clear')
         select_province(province_url)
     elif jawab.isnumeric():
         if int(jawab) in range(1, n):
             key, value = list(city_dict.items())[int(jawab)-1]
+            table.clear_rows()
             weather(key, value, data, city_dict)
         else:
+            table.clear_rows()
             invalid_selection()
             select_city(city_dict, data)
     else:
+        table.clear_rows()
         invalid_selection()
         select_city(city_dict, data)
 
 def weather(city_id, city_n, data, city_dict=None):
-    header(city_n)
+    header(city_n, length=67)
+    table = table_header()
 
     hourly_list = ['0', '6', '12', '18', '24', '30', '36', '42', '48', '54', '60', '66']
     param_id = ['weather', 't', 'hu', 'ws']
@@ -231,31 +280,39 @@ def weather(city_id, city_n, data, city_dict=None):
         wind_dir_list.append(wdh)
     
     if city_dict == None:
-        print('\n(1) Cuaca hari ini\n(2) Cuaca 3 hari kedepan\n(3) Beranda')
+        table.add_row(['(1) Cuaca hari ini\n(2) Cuaca 3 hari kedepan'])
+        print(table)
+        table.add_row(['(B) Beranda'])
+        print( "\n".join(table.get_string().splitlines()[-2:]) )
     else:
-        print('\n(1) Cuaca hari ini\n(2) Cuaca 3 hari kedepan\n(3) Kembali\n(4) Beranda')
+        table.add_row(['(1) Cuaca hari ini\n(2) Cuaca 3 hari kedepan'])
+        print(table)
+        table.add_row(['(K) Kembali\n(B) Beranda'])
+        print( "\n".join(table.get_string().splitlines()[-3:]) )
 
     if city_dict == None:
-        p3 = input('\nPilih (1/2/3): ')
+        jawab = input('\nPilih (1/2/B): ').lower()
     else:
-        p3 = input('\nPilih (1/2/3/4): ')
+        jawab = input('\nPilih (1/2/K/B): ').lower()
     os.system('clear')
-    if p3 == '1':
-        os.system('clear')
+
+    if jawab == '1':
+        table.clear_rows()
         td_weather(weather_list, wind_dir_list, city_id, city_n, data, city_dict)
-    elif p3 == '2':
-        os.system('clear')
+    elif jawab == '2':
+        table.clear_rows()
         tm_weather(weather_list, wind_dir_list, city_id, city_n, data, city_dict)
-    elif city_dict == None and p3 == '3':
-        os.system('clear')
+    elif city_dict == None and jawab == 'b':
+        table.clear_rows()
         home()
-    elif city_dict != None and p3 == '3':
-        os.system('clear')
+    elif city_dict != None and jawab == 'k':
+        table.clear_rows()
         select_city(city_dict, data)
-    elif city_dict != None and p3 == '4':
-        os.system('clear')
+    elif city_dict != None and jawab == 'b':
+        table.clear_rows()
         home()
     else:
+        table.clear_rows()
         invalid_selection()
         weather(city_id, city_n, data, city_dict)
 
@@ -272,7 +329,7 @@ def td_weather(weather_list, wind_dir_list, city_id, city_n, data, city_dict=Non
             td_list.append([get_symbol(weather_list[0][i], weather_symbols), f'{weather_code[weather_list[0][i]]}\n{weather_list[1][i]}°C\n💧{weather_list[2][i]} %\n💨 {knot_to_kmh(weather_list[3][i])} km/jam\n{wind_d_code[wind_dir_list[i]]}', ver_grid])
         else:
             td_list.append([get_symbol(weather_list[0][i], weather_symbols), f'{weather_code[weather_list[0][i]]}\n{weather_list[1][i]}°C\n💧{weather_list[2][i]} %\n💨 {knot_to_kmh(weather_list[3][i])} km/jam\n{wind_d_code[wind_dir_list[i]]}'])
-
+    
     table = PrettyTable()
     table._validate_field_names = lambda *a, **k: None
     table.title = f'{day_id[day_name]}, {date_time}'
@@ -280,18 +337,16 @@ def td_weather(weather_list, wind_dir_list, city_id, city_n, data, city_dict=Non
     table.add_row([td_list[0][0], td_list[0][1], td_list[0][2], 
                    td_list[1][0], td_list[1][1], td_list[1][2], 
                    td_list[2][0], td_list[2][1]])
-
     print(table)
 
-    print('\n(1) Kembali\n(2) Beranda')
+    print('\n(K) Kembali\n(B) Beranda')
 
-    p4 = input('\nPilih (1/2): ')
+    jawab = input('\nPilih (K/B): ').lower()
     os.system('clear')
-    if p4 == '1':
-        os.system('clear')
+
+    if jawab == 'k':
         weather(city_id, city_n, data, city_dict)
-    elif p4 == '2':
-        os.system('clear')
+    elif jawab == 'b':
         home()
     else:
         invalid_selection()
@@ -341,25 +396,37 @@ def tm_weather(weather_list, wind_dir_list, city_id, city_n, data, city_dict=Non
         z = tm_data(i, j)
         tm_table(z, day_name, tm_date_time)
     
-    print('(1) Kembali\n(2) Beranda')
+    print('(K) Kembali\n(B) Beranda')
 
-    p4 = input('\nPilih (1/2): ')
+    jawab = input('\nPilih (K/B): ').lower()
     os.system('clear')
-    if p4 == '1':
+
+    if jawab == 'k':
         os.system('clear')
         weather(city_id, city_n, data, city_dict)
-    elif p4 == '2':
+    elif jawab == 'b':
         os.system('clear')
         home()
     else:
         invalid_selection()
         tm_weather(weather_list, wind_dir_list, city_id, city_n, data, city_dict)
 
-def header(place, place_2='Daerah', length=66):
+def header(place, place_2='Daerah', length=62):
     print('+'+'-'*length+'+')
     print('|'+'Prakiraan Cuaca'.center(length)+'|')
     print('|'+f'{place_2} di {place}'.center(length)+'|')
-    print('+'+'-'*length+'+')
+
+def table_header(title=None):
+    table = PrettyTable()
+    if title == None:
+        title = ''
+
+    table.header = False
+    table.title = title
+    table.align = 'l'
+    table._min_table_width = 75
+
+    return table
 
 def invalid_selection():
     os.system('clear')
