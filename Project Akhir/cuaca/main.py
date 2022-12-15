@@ -256,7 +256,7 @@ def select_city(city_dict, data):
         select_city(city_dict, data)
 
 def weather(city_id, city_n, data, city_dict=None):
-    header(city_n, length=67)
+    header(city_n, '', length=67)
     table = table_header()
 
     hourly_list = ['0', '6', '12', '18', '24', '30', '36', '42', '48', '54', '60', '66']
