@@ -1,9 +1,7 @@
 import os
 import time
-import requests
 import re
 from prettytable import PrettyTable
-from bs4 import BeautifulSoup as bs
 from datetime import datetime, timedelta
 from constants import *
 
