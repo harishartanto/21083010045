@@ -34,7 +34,7 @@ def home():
     elif jawab == '5':
         table.clear_rows()
         os.system('clear')
-        print('Keluar dari program')
+        print('[Keluar dari program]')
         time.sleep(0.5)
         os.system('clear')
         exit()
