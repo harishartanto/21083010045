@@ -18,22 +18,18 @@ def home():
 
     if jawab == '1':
         table.clear_rows()
-        os.system('clear')
         select_province(province_url) 
     elif jawab == '2':
         table.clear_rows()
         loc_search(province_url)
     elif jawab == '3':
         table.clear_rows()
-        os.system('clear')
         description()
     elif jawab == '4':
         table.clear_rows()
-        os.system('clear')
         options()
     elif jawab == '5':
         table.clear_rows()
-        os.system('clear')
         print('[Keluar dari program]')
         time.sleep(0.5)
         os.system('clear')
@@ -69,7 +65,7 @@ def description():
         description()
 
 def options():
-    table = table_header('Opsi Lokasi')
+    table = table_header('Opsi Wilayah')
 
     global loc
     global province_url
@@ -109,7 +105,11 @@ def options():
         options()
 
 def loc_search(province_dict):
-    jawab = input('Nama kota/kabupaten: ').lower()
+    print('+'+'-'*62+'+')
+    print('|'+'Cari Daerah'.center(62)+'|')
+    print('+'+'-'*62+'+')
+    
+    jawab = input('\nNama kota/kabupaten: ').lower()
 
     city = []
     for _, v in province_dict.items():
@@ -239,7 +239,6 @@ def select_city(city_dict, data):
 
     if jawab == 'k':
         table.clear_rows()
-        os.system('clear')
         select_province(province_url)
     elif jawab.isnumeric():
         if int(jawab) in range(1, n):
@@ -284,7 +283,7 @@ def weather(city_id, city_n, data, city_dict=None):
         table.add_row(['(B) Beranda'])
         print( "\n".join(table.get_string().splitlines()[-2:]) )
     else:
-        table.add_row(['(1) Cuaca hari ini\n(2) Cuaca 3 hari kedepan'])
+        table.add_row(['(1) Cuaca hari ini\n(2) Cuaca 3 hari ke depan'])
         print(table)
         table.add_row(['(K) Kembali\n(B) Beranda'])
         print( "\n".join(table.get_string().splitlines()[-3:]) )
@@ -401,10 +400,8 @@ def tm_weather(weather_list, wind_dir_list, city_id, city_n, data, city_dict=Non
     os.system('clear')
 
     if jawab == 'k':
-        os.system('clear')
         weather(city_id, city_n, data, city_dict)
     elif jawab == 'b':
-        os.system('clear')
         home()
     else:
         invalid_selection()
