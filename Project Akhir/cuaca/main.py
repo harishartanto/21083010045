@@ -278,7 +278,7 @@ def weather(city_id, city_n, data, city_dict=None):
         wind_dir_list.append(wdh)
     
     if city_dict == None:
-        table.add_row(['(1) Cuaca hari ini\n(2) Cuaca 3 hari kedepan'])
+        table.add_row(['(1) Cuaca hari ini\n(2) Cuaca 3 hari ke depan'])
         print(table)
         table.add_row(['(B) Beranda'])
         print( "\n".join(table.get_string().splitlines()[-2:]) )
